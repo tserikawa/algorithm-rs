@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq)]
 pub struct Node<T> {
     /// データ
-    data: Option<T>,
+    data: T,
     /// 後続ノードへのポインタ
     next: Option<Box<Node<T>>>,
 }
@@ -22,22 +22,18 @@ impl<T> LinkList<T> {
     }
 
     pub fn insert_front(&mut self, item: T) {
-        // 先頭ポインタを取得する
         // take()は所有権ごと取り出すことができる。
-        // 今回は所有権の移動が行われるので、これを使う。
         if let Some(front) = self.head.take() {
             let node = Node {
-                data: Some(item),
-                next: front.next // ここでエラー
+                data: item,
+                next: Some(Box::new(front))
             };
-            // take()でNoneになったポインタを
-            // 新しいノードに書き換える。
+            // take()でNoneになったポインタを新しいノードに書き換える。
             self.head = Some(node);
-
         } else {
             // 追加するノード
             let node = Node {
-                data: Some(item),
+                data: item,
                 next: None,
             };
             self.head = Some(node);
@@ -47,7 +43,7 @@ impl<T> LinkList<T> {
     /// 先頭のノードの要素を取得します。
     pub fn get_first(&self) -> Option<&T> {
         if let Some(node) = &self.head {
-            node.data.as_ref()
+            Some(&node.data)
         }else{
             None
         }
