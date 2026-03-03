@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/link_list"]
+resolver = "2"
