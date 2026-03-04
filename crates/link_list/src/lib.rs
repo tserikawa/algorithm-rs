@@ -69,11 +69,9 @@ impl<T> LinkList<T> {
     pub fn get_back(&self) -> Option<&T> {
         let mut current = self.head.as_deref();
         while let Some(node) = current {
-            if node.next.is_none(){
-                break;
-            }
-            else{
-                current = node.next.as_deref();
+            match node.next.as_deref() {
+                Some(next) => current = Some(next),
+                None => break,
             }
         }
 
