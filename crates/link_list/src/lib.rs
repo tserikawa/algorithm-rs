@@ -79,6 +79,14 @@ impl<T> LinkList<T>
 
         current.map(|node| &node.data)
     }
+
+    /// 最初の要素を削除します。
+    pub fn remove_front(&mut self) {
+        // 一旦Noneにして付け替える。
+        if let Some(first) = self.head.take() {
+            self.head = first.next;
+        }
+    }
     
     /// itemをデータとするノードを探索します。
     pub fn search(&self, item: &T) -> Option<&Node<T>> {
@@ -126,7 +134,7 @@ mod tests {
     }
 
     #[test]
-    fn serch(){
+    fn search(){
         let mut list = LinkList::<i32>::new();
         list.insert_back(1);
         list.insert_back(2);
@@ -134,5 +142,16 @@ mod tests {
         assert!(node2.is_some());
         assert_eq!(node2.unwrap().data, 2);
         assert_eq!(node2.unwrap().next, None);
+    }
+
+    #[test]
+    fn remove_front(){
+        let mut list = LinkList::<i32>::new();
+        list.insert_back(1);
+        list.insert_back(2);
+        assert_eq!(list.get_front(), Some(&1));
+        assert_eq!(list.get_back(), Some(&2));
+        list.remove_front();
+        assert_eq!(list.get_front(), Some(&2));
     }
 }
