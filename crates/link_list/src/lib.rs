@@ -13,7 +13,9 @@ pub struct LinkList<T> {
     current: Option<Box<Node<T>>>,
 }
 
-impl<T> LinkList<T> {
+impl<T> LinkList<T> 
+    where T: PartialEq
+{
     /// 初期化します。
     pub fn new() -> LinkList<T> {
         LinkList {
@@ -77,6 +79,20 @@ impl<T> LinkList<T> {
 
         current.map(|node| &node.data)
     }
+    
+    /// itemをデータとするノードを探索します。
+    pub fn search(&self, item: &T) -> Option<&Node<T>> {
+        let mut current = self.head.as_deref();
+        while let Some(node) = current {
+            if &node.data == item {
+                return Some(node);
+            }
+            else{
+                current = node.next.as_deref();
+            }
+        }
+        None
+    } 
 }
 
 #[cfg(test)]
@@ -107,5 +123,16 @@ mod tests {
         list.insert_back(2);
         assert_eq!(list.get_front(), Some(&1));
         assert_eq!(list.get_back(), Some(&2));
+    }
+
+    #[test]
+    fn serch(){
+        let mut list = LinkList::<i32>::new();
+        list.insert_back(1);
+        list.insert_back(2);
+        let node2 = list.search(&2);
+        assert!(node2.is_some());
+        assert_eq!(node2.unwrap().data, 2);
+        assert_eq!(node2.unwrap().next, None);
     }
 }
