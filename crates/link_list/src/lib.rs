@@ -1,3 +1,5 @@
+use std::env::current_exe;
+
 #[derive(Debug, PartialEq)]
 pub struct Node<T> {
     /// データ
@@ -13,8 +15,9 @@ pub struct LinkList<T> {
     current: Option<Box<Node<T>>>,
 }
 
-impl<T> LinkList<T> 
-    where T: PartialEq
+impl<T> LinkList<T>
+where
+    T: PartialEq,
 {
     /// 初期化します。
     pub fn new() -> LinkList<T> {
@@ -30,7 +33,7 @@ impl<T> LinkList<T>
         if let Some(front) = self.head.take() {
             let node = Node {
                 data: item,
-                next: Some(front)
+                next: Some(front),
             };
             // take()でNoneになったポインタを新しいノードに書き換える。
             self.head = Some(Box::new(node));
@@ -62,7 +65,7 @@ impl<T> LinkList<T>
     pub fn get_front(&self) -> Option<&T> {
         if let Some(node) = &self.head {
             Some(&node.data)
-        }else{
+        } else {
             None
         }
     }
@@ -87,20 +90,30 @@ impl<T> LinkList<T>
             self.head = first.next;
         }
     }
-    
+
+    /// 末尾の要素を削除します。
+    pub fn remove_back(&mut self) {
+        let mut current = &mut self.head;
+
+        while current.as_ref().map_or(false, |n| n.next.is_some()) {
+            current = &mut current.as_mut().unwrap().next;
+        }
+
+        current.take();
+    }
+
     /// itemをデータとするノードを探索します。
     pub fn search(&self, item: &T) -> Option<&Node<T>> {
         let mut current = self.head.as_deref();
         while let Some(node) = current {
             if &node.data == item {
                 return Some(node);
-            }
-            else{
+            } else {
                 current = node.next.as_deref();
             }
         }
         None
-    } 
+    }
 }
 
 #[cfg(test)]
@@ -115,7 +128,7 @@ mod tests {
     }
 
     #[test]
-    fn insert_front(){
+    fn insert_front() {
         let mut list = LinkList::<i32>::new();
         list.insert_front(1);
         assert_eq!(list.get_front(), Some(&1));
@@ -124,7 +137,7 @@ mod tests {
     }
 
     #[test]
-    fn insert_back(){
+    fn insert_back() {
         let mut list = LinkList::<i32>::new();
         list.insert_back(1);
         assert_eq!(list.get_front(), Some(&1));
@@ -134,7 +147,7 @@ mod tests {
     }
 
     #[test]
-    fn search(){
+    fn search() {
         let mut list = LinkList::<i32>::new();
         list.insert_back(1);
         list.insert_back(2);
@@ -145,7 +158,7 @@ mod tests {
     }
 
     #[test]
-    fn remove_front(){
+    fn remove_front() {
         let mut list = LinkList::<i32>::new();
         list.insert_back(1);
         list.insert_back(2);
